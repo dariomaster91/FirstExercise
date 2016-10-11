@@ -32,6 +32,8 @@ public class FirstDriver{
         job.setCombinerClass(FirstCombiner.class);
         job.setReducerClass(FirstReducer.class);
         
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
         
