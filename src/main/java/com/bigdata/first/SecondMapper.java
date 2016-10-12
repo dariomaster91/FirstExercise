@@ -1,7 +1,6 @@
 package com.bigdata.first;
 
 import java.io.IOException;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -11,7 +10,6 @@ import org.apache.hadoop.mapreduce.Mapper;
  * @author dario
  */
 public class SecondMapper extends Mapper<LongWritable, Text, Text, Text>{
-    private final IntWritable one = new IntWritable(1);
     
     @Override
     public void map(LongWritable inputKey, Text inputValue, Context context) throws InterruptedException, IOException {

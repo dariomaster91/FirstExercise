@@ -12,9 +12,8 @@ import org.apache.hadoop.mapreduce.Mapper;
  */
 public class FirstMapper extends Mapper<LongWritable, Text, Text, IntWritable>{
     private final IntWritable one = new IntWritable(1);
-    
     @Override
-    public void map(LongWritable inputKey, Text inputValue, Mapper.Context context) throws InterruptedException, IOException {
+    public void map(LongWritable inputKey, Text inputValue, Context context) throws InterruptedException, IOException {
         String[] lines = inputValue.toString().split("\n");
         for(String line : lines){
             String[] splittedLine = line.split(",");

@@ -52,15 +52,32 @@ public class FirstDriver{
         secondJob.setOutputKeyClass(Text.class);
         secondJob.setOutputValueClass(Text.class);
         String inputSecondJob = outputPath + "/part*";
-        outputPath += "_final";
+        outputPath += "_intermediate";
         FileInputFormat.addInputPath(secondJob, new Path(inputSecondJob));
         FileOutputFormat.setOutputPath(secondJob, new Path(outputPath));
-        ControlledJob controlledSecondJob = new ControlledJob(firstJob.getConfiguration());
+        ControlledJob controlledSecondJob = new ControlledJob(secondJob.getConfiguration());
         controlledSecondJob.setJob(secondJob);
         
+        //  Third Job section
+        
+        Job thirdJob = Job.getInstance(new Configuration(), "third-job");
+        thirdJob.setMapperClass(ThirdMapper.class);
+        thirdJob.setMapOutputKeyClass(Text.class);
+        thirdJob.setMapOutputValueClass(Text.class);
+        thirdJob.setOutputKeyClass(Text.class);
+        thirdJob.setOutputValueClass(Text.class);
+        String inputThirdJob = outputPath + "/part*";
+        outputPath += "_final";
+        FileInputFormat.addInputPath(thirdJob, new Path(inputThirdJob));
+        FileOutputFormat.setOutputPath(thirdJob, new Path(outputPath));
+        ControlledJob controlledThirdJob = new ControlledJob(thirdJob.getConfiguration());
+        controlledThirdJob.setJob(thirdJob);
+        
         controlledSecondJob.addDependingJob(controlledFirstJob);
+        controlledThirdJob.addDependingJob(controlledSecondJob);
         jobControl.addJob(controlledFirstJob);
         jobControl.addJob(controlledSecondJob);
+        jobControl.addJob(controlledThirdJob);
         
         System.exit(startJobs(jobControl));       
     }
