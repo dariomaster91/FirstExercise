@@ -27,8 +27,8 @@ public class FirstDriver{
         
         Job firstJob = Job.getInstance(new Configuration(), "first-job");
         firstJob.setJarByClass(FirstDriver.class);
-        firstJob.setMapperClass(SecondMapper.class);
-        //firstJob.setReducerClass(FirstReducer.class);
+        firstJob.setMapperClass(FirstMapper.class);
+        firstJob.setReducerClass(FirstReducer.class);
         firstJob.setMapOutputKeyClass(Text.class);
         firstJob.setMapOutputValueClass(IntWritable.class);
         firstJob.setOutputKeyClass(Text.class);
@@ -41,12 +41,10 @@ public class FirstDriver{
         String outputPath = args[1] + datetime;
         FileInputFormat.addInputPath(firstJob, new Path(args[0]));
         FileOutputFormat.setOutputPath(firstJob, new Path(outputPath));    
-        
-        jobControl.addJob(controlledFirstJob);
-        
+           
         //  Second Job section
         
-        /*Job secondJob = Job.getInstance(new Configuration(), "second-job");
+        Job secondJob = Job.getInstance(new Configuration(), "second-job");
         secondJob.setMapperClass(SecondMapper.class);
         secondJob.setReducerClass(SecondReducer.class);
         secondJob.setMapOutputKeyClass(Text.class);
@@ -59,10 +57,28 @@ public class FirstDriver{
         FileOutputFormat.setOutputPath(secondJob, new Path(outputPath));
         ControlledJob controlledSecondJob = new ControlledJob(firstJob.getConfiguration());
         controlledSecondJob.setJob(secondJob);
+        
         controlledSecondJob.addDependingJob(controlledFirstJob);
+        jobControl.addJob(controlledFirstJob);
+        jobControl.addJob(controlledSecondJob);
         
-        jobControl.addJob(controlledSecondJob);*/
-        
-        jobControl.run();
-    }   
+        System.exit(startJobs(jobControl));       
+    }
+    
+    public static int startJobs(JobControl jc){
+        Thread jcThread = new Thread(jc);  
+        jcThread.start();  
+        while(true){  
+            if(jc.allFinished()){  
+                System.out.println(jc.getSuccessfulJobList());  
+                jc.stop();  
+                return 0;  
+            }  
+            if(jc.getFailedJobList().size() > 0){  
+                System.out.println(jc.getFailedJobList());  
+                jc.stop();  
+                return 1;  
+            }  
+        }  
+    }
 }
