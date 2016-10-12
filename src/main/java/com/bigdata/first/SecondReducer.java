@@ -12,14 +12,10 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class SecondReducer extends Reducer<Text, Text, Text, Text>{
     @Override
     public void reduce(Text inputKey, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        String[] item = inputKey.toString().split(" ");
-        Integer v = 0;
+        String value = "";
         while (values.iterator().hasNext()) {
-            v = Integer.parseInt(values.iterator().next().toString());
-        }
-        String date = item[0];
-        String value = item[1] + " " + v + ", ";
-        
-        context.write(new Text(date), new Text(value));
+            value = values.iterator().next().toString() + ", ";
+        }    
+        context.write(inputKey, new Text(value));
     }
 }

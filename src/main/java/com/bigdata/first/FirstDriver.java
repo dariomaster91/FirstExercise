@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.bigdata.first;
 
 import java.text.DateFormat;
@@ -15,6 +10,8 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;
+import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
@@ -24,26 +21,48 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class FirstDriver{
     public static void main(String[] args) throws Exception {
         
-        Job job = Job.getInstance(new Configuration(), "exercise1");
+        JobControl jobControl = new JobControl("job-control");
         
-        job.setJarByClass(FirstDriver.class);
+        //  First Job section
         
-        job.setMapperClass(FirstMapper.class);
-        //job.setCombinerClass(FirstReducer.class);
-        job.setReducerClass(FirstReducer.class);
-        
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-        
+        Job firstJob = Job.getInstance(new Configuration(), "first-job");
+        firstJob.setJarByClass(FirstDriver.class);
+        firstJob.setMapperClass(FirstMapper.class);
+        //firstJob.setReducerClass(FirstReducer.class);
+        firstJob.setMapOutputKeyClass(Text.class);
+        firstJob.setMapOutputValueClass(IntWritable.class);
+        firstJob.setOutputKeyClass(Text.class);
+        firstJob.setOutputValueClass(IntWritable.class);
+        ControlledJob controlledFirstJob = new ControlledJob(firstJob.getConfiguration());
+        controlledFirstJob.setJob(firstJob);
         Date now = Calendar.getInstance().getTime();
         DateFormat f = new SimpleDateFormat("yyyyMMddHHmmss");
-        String outputPath = args[1] + f.format(now);
+        String datetime = f.format(now);
+        String outputPath = args[1] + datetime;
+        FileInputFormat.addInputPath(firstJob, new Path(args[0]));
+        FileOutputFormat.setOutputPath(firstJob, new Path(outputPath));    
         
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(outputPath));
+        jobControl.addJob(controlledFirstJob);
         
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
+        //  Second Job section
+        
+        /*Job secondJob = Job.getInstance(new Configuration(), "second-job");
+        secondJob.setMapperClass(SecondMapper.class);
+        secondJob.setReducerClass(SecondReducer.class);
+        secondJob.setMapOutputKeyClass(Text.class);
+        secondJob.setMapOutputValueClass(Text.class);
+        secondJob.setOutputKeyClass(Text.class);
+        secondJob.setOutputValueClass(Text.class);
+        String inputSecondJob = outputPath + "/part*";
+        outputPath += "_final";
+        FileInputFormat.addInputPath(secondJob, new Path(inputSecondJob));
+        FileOutputFormat.setOutputPath(secondJob, new Path(outputPath));
+        ControlledJob controlledSecondJob = new ControlledJob(firstJob.getConfiguration());
+        controlledSecondJob.setJob(secondJob);
+        controlledSecondJob.addDependingJob(controlledFirstJob);
+        
+        jobControl.addJob(controlledSecondJob);*/
+        
+        jobControl.run();
     }   
 }

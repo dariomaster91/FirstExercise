@@ -10,16 +10,17 @@ import org.apache.hadoop.mapreduce.Mapper;
  *
  * @author dario
  */
-public class FirstMapper extends Mapper<LongWritable, Text, Text, Text>{
+public class SecondMapper extends Mapper<LongWritable, Text, Text, IntWritable>{
     private final IntWritable one = new IntWritable(1);
     
     @Override
-    public void map(LongWritable inputKey, Text inputValue, Context context) throws InterruptedException, IOException {
+    public void map(LongWritable inputKey, Text inputValue, Mapper.Context context) throws InterruptedException, IOException {
         String[] lines = inputValue.toString().split("\n");
         for(String line : lines){
-            String[] splittedLine = line.split(" ");
+            String[] splittedLine = line.split(",");
+            String month = splittedLine[0].substring(0,7);
             for(int i = 1; i < splittedLine.length; i++){
-                context.write(new Text(splittedLine[0]), new Text(splittedLine[i]));
+                context.write(new Text(month + " " + splittedLine[i]), one);
             }
         }
     }
