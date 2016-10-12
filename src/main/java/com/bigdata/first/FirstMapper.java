@@ -17,7 +17,7 @@ public class FirstMapper extends Mapper<LongWritable, Text, Text, IntWritable>{
     public void map(LongWritable inputKey, Text inputValue, Context context) throws InterruptedException, IOException {
         String[] lines = inputValue.toString().split("\n");
         for(String line : lines){
-            String[] splittedLine = line.split(", ");
+            String[] splittedLine = line.split(",");
             String month = splittedLine[0].substring(0,7);
             for(int i = 1; i < splittedLine.length; i++){
                 context.write(new Text(month + " " + splittedLine[i]), one);

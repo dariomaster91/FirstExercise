@@ -1,7 +1,6 @@
 package com.bigdata.first;
 
 import java.io.IOException;
-import java.util.Iterator;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -10,12 +9,13 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author dario
  */
-public class FirstReducer extends Reducer<Text, IntWritable, Text, Text>{
-    public void reduce(Text inputKey, Iterator<IntWritable> values, Context context) throws IOException, InterruptedException {
+public class SecondReducer extends Reducer<Text, Text, Text, Text>{
+    @Override
+    public void reduce(Text inputKey, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         String[] item = inputKey.toString().split(" ");
-        int v = 0;
-        while (values.hasNext()) {
-            v = values.next().get();
+        Integer v = 0;
+        while (values.iterator().hasNext()) {
+            v = Integer.parseInt(values.iterator().next().toString());
         }
         String date = item[0];
         String value = item[1] + " " + v + ", ";
