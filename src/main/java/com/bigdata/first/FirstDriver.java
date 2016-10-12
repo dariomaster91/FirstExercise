@@ -27,7 +27,7 @@ public class FirstDriver{
         
         Job firstJob = Job.getInstance(new Configuration(), "first-job");
         firstJob.setJarByClass(FirstDriver.class);
-        firstJob.setMapperClass(FirstMapper.class);
+        firstJob.setMapperClass(SecondMapper.class);
         //firstJob.setReducerClass(FirstReducer.class);
         firstJob.setMapOutputKeyClass(Text.class);
         firstJob.setMapOutputValueClass(IntWritable.class);
