@@ -18,7 +18,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  *
  * @author dario
  */
-public class FirstDriver{
+public class Driver{
     public static void main(String[] args) throws Exception {
         
         JobControl jobControl = new JobControl("job-control");
@@ -26,7 +26,7 @@ public class FirstDriver{
         //  First Job section
         
         Job firstJob = Job.getInstance(new Configuration(), "first-job");
-        firstJob.setJarByClass(FirstDriver.class);
+        firstJob.setJarByClass(Driver.class);
         firstJob.setMapperClass(FirstMapper.class);
         firstJob.setReducerClass(FirstReducer.class);
         firstJob.setMapOutputKeyClass(Text.class);
